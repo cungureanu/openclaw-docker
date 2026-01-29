@@ -4,9 +4,19 @@ Pre-built Docker image for [Moltbot](https://github.com/moltbot/moltbot) — run
 
 ## One-Line Install (Recommended)
 
+### Linux / macOS
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/phioranex/moltbot-docker/main/install.sh | bash
 ```
+
+### Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/phioranex/moltbot-docker/main/install.ps1 | iex
+```
+
+> **Note for Windows users:** Make sure Docker Desktop is installed and running. You can also use WSL2 with the Linux installation command.
 
 This will:
 - ✅ Check prerequisites (Docker, Docker Compose)
@@ -16,6 +26,12 @@ This will:
 - ✅ Start the gateway
 
 ### Install Options
+
+**Linux / macOS:**
+
+### Install Options
+
+**Linux / macOS:**
 
 ```bash
 # Just pull the image (no setup)
@@ -29,6 +45,22 @@ curl -fsSL https://raw.githubusercontent.com/phioranex/moltbot-docker/main/insta
 
 # Custom install directory
 curl -fsSL https://raw.githubusercontent.com/phioranex/moltbot-docker/main/install.sh | bash -s -- --install-dir /opt/moltbot
+```
+
+**Windows (PowerShell):**
+
+```powershell
+# Just pull the image (no setup)
+irm https://raw.githubusercontent.com/phioranex/moltbot-docker/main/install.ps1 | iex -PullOnly
+
+# Skip onboarding (if already configured)
+irm https://raw.githubusercontent.com/phioranex/moltbot-docker/main/install.ps1 | iex -SkipOnboard
+
+# Don't start gateway after setup
+irm https://raw.githubusercontent.com/phioranex/moltbot-docker/main/install.ps1 | iex -NoStart
+
+# Custom install directory
+$env:TEMP_INSTALL_SCRIPT = irm https://raw.githubusercontent.com/phioranex/moltbot-docker/main/install.ps1; Invoke-Expression $env:TEMP_INSTALL_SCRIPT -InstallDir "C:\moltbot"
 ```
 
 ## Manual Install
