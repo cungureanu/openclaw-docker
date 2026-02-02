@@ -210,9 +210,17 @@ if [ -n "$SUDO_USER" ]; then
     USER_HOME=$(get_user_home)
     # Replace ~/.openclaw with the actual user's home directory
     if grep -q "~/.openclaw" docker-compose.yml; then
-        sed -i.bak "s|~/.openclaw|$USER_HOME/.openclaw|g" docker-compose.yml
-        rm -f docker-compose.yml.bak
-        log_success "Updated docker-compose.yml for sudo user ($SUDO_USER)"
+        if sed -i.bak "s|~/.openclaw|$USER_HOME/.openclaw|g" docker-compose.yml; then
+            rm -f docker-compose.yml.bak
+            # Verify the replacement actually occurred
+            if ! grep -q "~/.openclaw" docker-compose.yml; then
+                log_success "Updated docker-compose.yml for sudo user ($SUDO_USER)"
+            else
+                log_warning "sed replacement may have failed, check docker-compose.yml manually"
+            fi
+        else
+            log_warning "Failed to update docker-compose.yml paths"
+        fi
     else
         log_warning "docker-compose.yml doesn't contain '~/.openclaw', skipping path update"
     fi
@@ -252,9 +260,15 @@ if [ "$(id -u)" -eq 0 ]; then
 else
     # Running as non-root user
     # Try 775 first (safer than 777)
-    chmod -R 775 "$OPENCLAW_DIR" 2>/dev/null || chmod -R 777 "$OPENCLAW_DIR"
-    ACTUAL_PERMS=$(stat -c "%a" "$OPENCLAW_DIR" 2>/dev/null || stat -f "%OLp" "$OPENCLAW_DIR" 2>/dev/null)
-    log_warning "Running as non-root user, set permissions to $ACTUAL_PERMS"
+    if chmod -R 775 "$OPENCLAW_DIR" 2>/dev/null; then
+        ACTUAL_PERMS="775"
+        log_warning "Running as non-root user, set permissions to 775"
+    else
+        # Fallback to 777 if 775 fails (e.g., not the owner)
+        chmod -R 777 "$OPENCLAW_DIR"
+        ACTUAL_PERMS="777"
+        log_warning "Could not set 775 permissions (not owner?), using 777 instead"
+    fi
     log_warning "For better security on Synology/NAS, consider running with sudo"
 fi
 
