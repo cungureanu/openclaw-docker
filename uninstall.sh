@@ -153,15 +153,6 @@ print_banner
 echo -e "${YELLOW}This will uninstall OpenClaw from your system.${NC}"
 echo ""
 
-# Determine compose command
-if docker compose version &> /dev/null; then
-    COMPOSE_CMD="docker compose"
-elif command -v docker-compose &> /dev/null; then
-    COMPOSE_CMD="docker-compose"
-else
-    COMPOSE_CMD=""
-fi
-
 # Stop and remove containers
 log_step "Stopping and removing containers..."
 

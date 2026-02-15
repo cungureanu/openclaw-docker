@@ -59,7 +59,7 @@ function Write-Warning {
     Write-Host "⚠ $Message" -ForegroundColor Yellow
 }
 
-function Write-Error {
+function Write-ErrorMessage {
     param([string]$Message)
     Write-Host "✗ $Message" -ForegroundColor Red
 }
